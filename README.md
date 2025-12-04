@@ -4,7 +4,7 @@
 
 ## 🎯 Objectif du projet
 
-Le but du POC final sera de construire un système RAG capable de recommander des événements culturels en Ille-et-Vilaine (avec un focus possible sur Rennes), en s’appuyant sur :
+Le but du POC final sera de construire un système RAG capable de recommander des événements musicaux de la ville de Rennes, en s’appuyant sur :
 - l’API OpenAgenda,
 - un embedding Mistral,
 - un index vectoriel FAISS,
@@ -16,12 +16,13 @@ Le but du POC final sera de construire un système RAG capable de recommander de
 
 L’objectif est d’organiser un dépôt clair et évolutif dès le début.
 ```
+PULS_EVENTS
 │
 ├── README.md                # Documentation du projet
 ├── requirements.txt         # Dépendances Python
 ├── .gitignore               # Fichiers à ignorer par Git
 ├── config/                  # Fichiers de configuration
-│   ├── settings.py          # Variables globales (API keys, etc.)
+│   ├── config.py          # Variables globales (API keys, etc.)
 │   └── __init__.py
 │
 ├── src/                     # Code source principal
@@ -42,12 +43,15 @@ L’objectif est d’organiser un dépôt clair et évolutif dès le début.
 │   │
 │   ├── utils/               # Fonctions utilitaires
 │   │   ├── logger.py
+│   │   ├── openagenda_client.py
 │   │   └── __init__.py
 │   │
 │   └── __init__.py
 │
-├── data/                    # Données (base de connaissances, embeddings)
+├── data/                    # Données (données,base de connaissances, embeddings) 
 │   ├── documents/
+│   ├── raw/
+│   │  └── events_musique_rennes
 │   └── embeddings/
 │
 ├── tests/                   # Tests unitaires et d’intégration
@@ -96,7 +100,15 @@ Si le message s’affiche → environnement validé.
 ### 📦 requirements.txt 
 
 ```
-
+dependencies = [
+    "dotenv>=0.9.9",
+    "faiss-cpu>=1.13.0",
+    "ipykernel>=7.1.0",
+    "langchain>=1.1.0",
+    "mistralai>=1.9.11",
+    "pandas>=2.3.3",
+    "requests>=2.32.5",
+]
 ```
 
 ### 🔒 La clé API Mistral
@@ -105,6 +117,6 @@ La clé API Mistral doit être stockée dans un fichier `.env` non versionné.
 
 ### 🌍 Zone géographique ciblée
 
-Le système RAG final ciblera les événements situés en :
-- Ille-et-Vilaine (35)
-- Avec un focus particulier sur Rennes, sans exclure les communes voisines : Saint-Malo, Fougères, Redon, etc.
+Le système RAG final ciblera les événements:
+- Situés à Rennes (35)
+- Musicaux
