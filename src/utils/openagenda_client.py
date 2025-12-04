@@ -2,6 +2,7 @@ import requests
 from config.config import OPENAGENDA_API_KEY
 import json
 from datetime import datetime
+import pandas as pd
 
 class OpenAgendaClient:
     BASE_URL = 'https://api.openagenda.com/v2/agendas'
@@ -144,5 +145,17 @@ if __name__ == '__main__':
 
     with open('Data/raw/events_rennes_metropole.json','w',encoding='utf-8') as f:
         json.dump(response, f, indent=4, ensure_ascii=False)
+    
+    events_list = [
+        {"event_id": key, **value} for key, value in response.items()
+    ]
+    df = pd.json_normalize(events_list)
+    columns_to_keep = ['event_id','keywords.fr','dateRange.fr',
+                       'description.fr','originAgenda.title','title.fr',
+                       'lastTiming.end','lastTiming.begin','firstTiming.end',
+                       'firstTiming.begin','location.address',
+                       'location.name','location.city']
+    df= df[columns_to_keep]
+    df.to_csv(".../Data/processed/events_musique_35.csv")
 
 
