@@ -139,7 +139,7 @@ if __name__ == '__main__':
                                                end_date='01/01/25',
                                                keywords=keywords,
                                                params = {'limit':1000,
-                                                        'city[]':['Rennes','rennes']}
+                                                        }
                                             )
 
     with open('Data/raw/events_rennes_metropole.json','w',encoding='utf-8') as f:

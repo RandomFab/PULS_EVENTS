@@ -51,7 +51,9 @@ PULS_EVENTS
 ├── data/                    # Données (données,base de connaissances, embeddings) 
 │   ├── documents/
 │   ├── raw/
-│   │  └── events_musique_rennes
+│   │  └── events_rennes_metropole.json
+│   ├── processed/
+│   │  └── events_musique_35.csv
 │   └── embeddings/
 │
 ├── tests/                   # Tests unitaires et d’intégration
