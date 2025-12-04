@@ -9,6 +9,7 @@ dependencies = [
     "faiss-cpu>=1.13.0",
     "ipykernel>=7.1.0",
     "langchain>=1.1.0",
+    "langchain-text-splitters>=1.0.0",
     "mistralai>=1.9.11",
     "pandas>=2.3.3",
     "requests>=2.32.5",

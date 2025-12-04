@@ -1,1 +1,2 @@
-# Pipeline RAG\n# Orchestration entre retrieval et génération.
+
+from config.config import (CHUNK_OVERLAP,CHUNK_SIZE)

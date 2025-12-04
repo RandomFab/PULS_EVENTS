@@ -437,6 +437,18 @@ wheels = [
 ]
 
 [[package]]
+name = "langchain-text-splitters"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "langchain-core" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fa/2e/c833dcc379c1c086453708ef5eef7d4d1f808559ca4458bd6569d5d83ad7/langchain_text_splitters-1.0.0.tar.gz", hash = "sha256:d8580a20ad7ed10b432feb273e5758b2cc0902d094919629cec0e1ad691a6744", size = 264257, upload-time = "2025-10-17T14:33:41.743Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1e/97/d362353ab04f865af6f81d4d46e7aa428734aa032de0017934b771fc34b7/langchain_text_splitters-1.0.0-py3-none-any.whl", hash = "sha256:f00c8219d3468f2c5bd951b708b6a7dd9bc3c62d0cfb83124c377f7170f33b2e", size = 33851, upload-time = "2025-10-17T14:33:40.46Z" },
+]
+
+[[package]]
 name = "langgraph"
 version = "1.0.4"
 source = { registry = "https://pypi.org/simple" }
@@ -804,6 +816,7 @@ dependencies = [
     { name = "faiss-cpu" },
     { name = "ipykernel" },
     { name = "langchain" },
+    { name = "langchain-text-splitters" },
     { name = "mistralai" },
     { name = "pandas" },
     { name = "requests" },
@@ -815,6 +828,7 @@ requires-dist = [
     { name = "faiss-cpu", specifier = ">=1.13.0" },
     { name = "ipykernel", specifier = ">=7.1.0" },
     { name = "langchain", specifier = ">=1.1.0" },
+    { name = "langchain-text-splitters", specifier = ">=1.0.0" },
     { name = "mistralai", specifier = ">=1.9.11" },
     { name = "pandas", specifier = ">=2.3.3" },
     { name = "requests", specifier = ">=2.32.5" },
