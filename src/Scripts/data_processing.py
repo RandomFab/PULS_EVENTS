@@ -1,5 +1,5 @@
 from src.utils.openagenda_client import OpenAgendaClient
-from config.config import OPENAGENDA_API_KEY
+from config.config import OPENAGENDA_API_KEY,RAW_DATA
 import pandas as pd
 import json
 
@@ -13,7 +13,7 @@ response = client.get_events_with_keywords(agendaUID='20500020',
                                                     }
                                         )
 
-with open('Data/raw/events_rennes_metropole.json','w',encoding='utf-8') as f:
+with open(RAW_DATA,'w',encoding='utf-8') as f:
     json.dump(response, f, indent=4, ensure_ascii=False)
 
 events_list = [

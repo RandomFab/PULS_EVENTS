@@ -1,6 +1,8 @@
 # Fichier de configuration\n# Contient les cl�s API et param�tres globaux.
 from dotenv import load_dotenv
 import os
+from pathlib import Path
+
 load_dotenv()
 
 OPENAGENDA_API_KEY = os.getenv("OPENAGENDA_API_KEY")
@@ -30,9 +32,16 @@ EMBEDDING_BATCH_SIZE = 32           # Taille des lots pour l'API d'embedding
 SEARCH_K = 5                        # Nombre de documents à récupérer par défaut
 
 # --- Configuration de la Base de Données ---
-DATABASE_DIR = "database"
-DATABASE_FILE = os.path.join(DATABASE_DIR, "interactions.db")
-DATABASE_URL = f"sqlite:///{DATABASE_FILE}" # URL pour SQLAlchemy
+# DATABASE_DIR = "database"
+# DATABASE_FILE = os.path.join(DATABASE_DIR, "interactions.db")
+# DATABASE_URL = f"sqlite:///{DATABASE_FILE}" # URL pour SQLAlchemy
 
 # --- Configuration de l'Application ---
 APP_TITLE = "Mix’n’Renn"
+
+
+# --- Configuration des chemins d'acces
+BASE_DIR = Path(__file__).resolve().parent.parent
+PROCESSED_DATA = BASE_DIR / 'Data' / 'processed' / 'events_musique_35.csv'
+RAW_DATA = BASE_DIR / 'Data' / 'raw' / 'events_rennes_metropole.json'
+EMBEDDINGS_DATA= BASE_DIR / 'Data' / 'embeddings' / 'embeddings.json'
