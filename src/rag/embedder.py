@@ -35,7 +35,7 @@ class Embedder:
                     raise
 
                 logging.warning(f"⏳ API saturée : {last_error}")
-                time.sleep(2)
+                time.sleep(5)
 
         raise last_error
 

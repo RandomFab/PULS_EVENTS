@@ -20,7 +20,11 @@ for idx, row in df.iterrows():
                            'chunk':chunk,
                            'vector':vector.tolist(),
                            'title':row['title.fr'],
-                           'keywords':row['keywords.fr']})
+                           'keywords':row['keywords.fr'],
+                           'start_date':row['firstTiming.begin'],
+                           'end_date':row['lastTiming.end'],
+                           'location_adress':row['location.address'],
+                           'location_name':row['location.name']})
     
     print(f"Evenement n°{idx} a été traité")
 
