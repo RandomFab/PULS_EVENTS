@@ -3,6 +3,7 @@ from mistralai import Mistral
 import numpy as np
 import logging
 import time
+from config.logger import logger
 
 class Embedder:
     def __init__(self,api_key:str,model:str='mistral-embed',batch_size:int=64,max_retries:int=5):
@@ -34,7 +35,7 @@ class Embedder:
                 if not retryable:
                     raise
 
-                logging.warning(f"⏳ API saturée : {last_error}")
+                logger.warning(f"⏳ API saturée : {last_error}")
                 time.sleep(5)
 
         raise last_error
@@ -43,7 +44,7 @@ class Embedder:
         vectors =  []
         for i in range(0,len(texts),self.batch_size):
             batch = texts[i:i + self.batch_size]
-            logging.info(f"Envoie d'un batch de {len(batch)} chunks")
+            logger.info(f"Envoie d'un batch de {len(batch)} chunks")
             batch_vectors = self._embedded_batch(batch)
             vectors.extend(batch_vectors)
         

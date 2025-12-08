@@ -1,13 +1,13 @@
 from src.utils.openagenda_client import OpenAgendaClient
-from config.config import OPENAGENDA_API_KEY,RAW_DATA
+from config.config import OPENAGENDA_API_KEY,RAW_DATA,PROCESSED_DATA
 import pandas as pd
 import json
 
 client = OpenAgendaClient(api_key=OPENAGENDA_API_KEY)
 keywords = ['musique','concert']
 response = client.get_events_with_keywords(agendaUID='20500020',
-                                            start_date='01/01/24',
-                                            end_date='01/01/25',
+                                            start_date='01/01/25',
+                                            end_date='01/01/27',
                                             keywords=keywords,
                                             params = {'limit':1000,
                                                     }
@@ -26,4 +26,4 @@ columns_to_keep = ['event_id','keywords.fr','dateRange.fr',
                     'firstTiming.begin','location.address',
                     'location.name','location.city']
 df= df[columns_to_keep]
-df.to_csv(".../Data/processed/events_musique_35.csv")
+df.to_csv(PROCESSED_DATA)
