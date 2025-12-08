@@ -13,6 +13,14 @@ embeddings:list =[]
 
 for idx, row in tqdm(enumerate(df.iterrows()), total=len(df), desc="Traitement des événements"):
     text = f"{row[1]['title.fr']}. {row[1]['description.fr']}"
+    text = (
+    f"Titre : {row[1]['title.fr']}.\n"
+    f"Description : {row[1]['description.fr']}.\n"
+    f"Ville : {row[1]['location.city']}.\n"
+    f"Adresse : {row[1]['location.address']}.\n"
+    f"Début : {row[1]['firstTiming.begin']}.\n"
+    f"Fin : {row[1]['lastTiming.end']}."
+)
     chunks, vectors = embedder.chunk_and_embed(text=text)
 
     for chunk, vector in zip(chunks, vectors):
@@ -24,7 +32,7 @@ for idx, row in tqdm(enumerate(df.iterrows()), total=len(df), desc="Traitement d
             'keywords': row[1]['keywords.fr'],
             'start_date': row[1]['firstTiming.begin'],
             'end_date': row[1]['lastTiming.end'],
-            'location_adress': row[1]['location.address'],
+            'location_address': row[1]['location.address'],
             'location_name': row[1]['location.name']
         })
 

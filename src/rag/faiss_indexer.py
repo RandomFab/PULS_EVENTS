@@ -65,7 +65,7 @@ class FaissIndexer:
                 "keywords": item["keywords"],
                 "start_date": item["start_date"],
                 "end_date": item["end_date"],
-                "location_address": item["location_adress"],
+                "location_address": item["location_address"],
                 "location_name": item["location_name"]
             })
 

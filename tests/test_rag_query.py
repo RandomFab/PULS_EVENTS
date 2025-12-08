@@ -7,12 +7,12 @@ from config.logger import logger
 embedder = Embedder(api_key=MISTRAL_API_KEY,model=EMBEDDING_MODEL)
 indexer = FaissIndexer(INDEX_PATH,METADATA_PATH)
 
-query = 'Qui fait un concert de piano à Pacé ?'
+query = 'festival jazz cesson'
 _,query_vector = embedder.chunk_and_embed(query)
 
 indexer.load_index()
 
 results = indexer.search(query_vector=query_vector,k=5)
 
-for result in results[0]:
-    logger.info(f"Meilleurs résultats pour la question : {query} \n contexte : {result['chunk']} \n Ville : {result['location_address']} \n ============================================ ")
+for i, result in enumerate(results[0]):
+    logger.info(f"[Top {i+1}] Meilleur résultat pour la question : {query} \n contexte : {result['chunk']} \n Ville : {result['location_address']} \n ============================================ ")
