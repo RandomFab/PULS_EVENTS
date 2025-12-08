@@ -22,7 +22,7 @@ MODEL_NAME = "mistral-small-latest" # Ou un autre modèle comme mistral-large-la
 # --- Configuration des paramètres d'embeddings ---
 CHUNK_SIZE = 800                   # Taille des chunks en *caractères* (vise ~512 tokens)
 CHUNK_OVERLAP = 150                 # Chevauchement en *caractères*
-EMBEDDING_BATCH_SIZE = 32           # Taille des lots pour l'API d'embedding
+EMBEDDING_BATCH_SIZE = 64           # Taille des lots pour l'API d'embedding
 
 # --- Configuration de la Recherche ---
 SEARCH_K = 5                        # Nombre de documents à récupérer par défaut
@@ -37,5 +37,5 @@ RAW_DATA = BASE_DIR / 'Data' / 'raw' / 'events_rennes_metropole_raw.json'
     # --- Embeddings ---
 EMBEDDINGS_PATH = BASE_DIR / 'Data' / 'embeddings' / 'embeddings.json'
     # --- Indexation ---
-INDEX_PATH = BASE_DIR / "Data" / "index" / 'faiss_index.index'
+INDEX_PATH = BASE_DIR / "Data" / "index" 
 METADATA_PATH = BASE_DIR / "Data" / "index" / 'faiss_metadata.json'
