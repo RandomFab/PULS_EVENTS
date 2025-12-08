@@ -4,7 +4,7 @@
 
 ## 🎯 Objectif du projet
 
-Le but du POC final sera de construire un système RAG capable de recommander des événements musicaux de la ville de Rennes, en s’appuyant sur :
+Le but du POC final sera de construire un système RAG capable de recommander des événements musicaux de la ville de Rennes sur l'année 2024, en s’appuyant sur :
 - l’API OpenAgenda,
 - un embedding Mistral,
 - un index vectoriel FAISS,
