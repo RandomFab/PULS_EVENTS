@@ -1,5 +1,5 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
+from config.logger import logger
 
 class Chunker:
     def __init__(self,chunk_size:int = 800,chunk_overlap:int = 150):
@@ -19,6 +19,10 @@ class Chunker:
         
     def split_text(self,text):
         if text == "":
-            return []
-        return self.splitter.split_text(text)
+            chunks=[]
+            logger.warning("⚠️ Le texte fourni est vide. Le chunks retourné est vide (chunks = [])")
+            return chunks
+        
+        chunks = self.splitter.split_text(text)
+        return chunks
     
