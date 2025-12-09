@@ -181,14 +181,15 @@ class LangChainFaissIndexer:
             k=k
         )
         
-        # Pour obtenir les scores, on peut utiliser une recherche avec le vecteur
-        results_with_scores = []
-        for doc in results:
-            # Calcul manuel du score si nécessaire
-            results_with_scores.append((doc, None))
+        # # Pour obtenir les scores, on peut utiliser une recherche avec le vecteur
+        # results_with_scores = []
+        # for doc in results:
+        #     # Calcul manuel du score si nécessaire
+        #     results_with_scores.append((doc, None))
         
-        logger.info(f"✅ {len(results)} résultats trouvés")
-        return results_with_scores
+        # logger.info(f"✅ {len(results)} résultats trouvés")
+        # return results_with_scores
+        return results
     
     def filter_by_metadata(self, query: str, k: int = 5, filter_dict: dict = None):
         """
