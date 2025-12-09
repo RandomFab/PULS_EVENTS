@@ -1,1 +1,16 @@
-# Point d'entrée API\n# Utilisez FastAPI pour exposer les endpoints.
+from fastapi import FastAPI
+from config.config import APP_TITLE
+from src.app.routes import router
+
+app = FastAPI(
+    title=APP_TITLE,
+    version='1.0.0'
+)
+app.include_router(router)
+
+@app.get('/')
+def root():
+    """
+    Message renvoyÃ© sur le chemin root
+    """
+    return {f"Bonjour et bienvenue sur l'API {APP_TITLE}"}

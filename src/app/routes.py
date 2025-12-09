@@ -1,1 +1,10 @@
-# DÈfinition des routes API\n# Exemple : GET /question
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get('/health_router')
+def health_router():
+    """
+    Retourne le statut de sant√© de l'API via router
+    """
+    return {'status':'Router ok'}
