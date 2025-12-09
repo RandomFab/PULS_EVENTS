@@ -191,6 +191,23 @@ class LangChainFaissIndexer:
         # return results_with_scores
         return results
     
+    def index_info(self)->dict:
+        if self.vectorstore is None:
+            return {
+                'exists' : False,
+                'message' : "Vector non initialisé"
+            }
+
+
+        info = {
+            'exists':True,
+            'n_vectors':self.vectorstore.index.ntotal,
+            'dimension':self.vectorstore.index.d,
+            'index_path': str(self.index_dir)
+        }
+
+        return info
+
     # def filter_by_metadata(self, query: str, k: int = 5, filter_dict: dict = None):
     #     """
     #     Recherche avec filtrage sur les métadonnées.
