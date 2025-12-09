@@ -77,22 +77,22 @@ class LangChainFaissIndexer:
         
         logger.info(f"✅ VectorStore créé avec {len(documents)} documents")
     
-    def build_from_documents(self, documents: list[Document]):
-        """
-        Construit le vectorstore directement depuis des Documents LangChain.
-        Les embeddings seront générés automatiquement.
+    # def build_from_documents(self, documents: list[Document]):
+    #     """
+    #     Construit le vectorstore directement depuis des Documents LangChain.
+    #     Les embeddings seront générés automatiquement.
         
-        Args:
-            documents: Liste de Documents LangChain
-        """
-        logger.info(f"🧠 Génération des embeddings pour {len(documents)} documents...")
+    #     Args:
+    #         documents: Liste de Documents LangChain
+    #     """
+    #     logger.info(f"🧠 Génération des embeddings pour {len(documents)} documents...")
         
-        self.vectorstore = FAISS.from_documents(
-            documents=documents,
-            embedding=self.embedding_client
-        )
+    #     self.vectorstore = FAISS.from_documents(
+    #         documents=documents,
+    #         embedding=self.embedding_client
+    #     )
         
-        logger.info(f"✅ VectorStore créé avec {len(documents)} documents")
+    #     logger.info(f"✅ VectorStore créé avec {len(documents)} documents")
     
     def save(self):
         """Sauvegarde le vectorstore sur le disque."""
@@ -191,44 +191,44 @@ class LangChainFaissIndexer:
         # return results_with_scores
         return results
     
-    def filter_by_metadata(self, query: str, k: int = 5, filter_dict: dict = None):
-        """
-        Recherche avec filtrage sur les métadonnées.
+    # def filter_by_metadata(self, query: str, k: int = 5, filter_dict: dict = None):
+    #     """
+    #     Recherche avec filtrage sur les métadonnées.
         
-        Args:
-            query: Texte de recherche
-            k: Nombre de résultats
-            filter_dict: Dictionnaire de filtres (ex: {'event_id': 123})
+    #     Args:
+    #         query: Texte de recherche
+    #         k: Nombre de résultats
+    #         filter_dict: Dictionnaire de filtres (ex: {'event_id': 123})
             
-        Returns:
-            Liste de Documents
-        """
-        if self.vectorstore is None:
-            raise ValueError("VectorStore non initialisé")
+    #     Returns:
+    #         Liste de Documents
+    #     """
+    #     if self.vectorstore is None:
+    #         raise ValueError("VectorStore non initialisé")
         
-        logger.info(f"🔍 Recherche avec filtres: {filter_dict}")
+    #     logger.info(f"🔍 Recherche avec filtres: {filter_dict}")
         
-        # Note: FAISS de LangChain supporte les filtres basiques
-        results = self.vectorstore.similarity_search(
-            query, 
-            k=k,
-            filter=filter_dict
-        )
+    #     # Note: FAISS de LangChain supporte les filtres basiques
+    #     results = self.vectorstore.similarity_search(
+    #         query, 
+    #         k=k,
+    #         filter=filter_dict
+    #     )
         
-        logger.info(f"✅ {len(results)} résultats filtrés trouvés")
-        return results
+    #     logger.info(f"✅ {len(results)} résultats filtrés trouvés")
+    #     return results
     
-    def add_documents(self, documents: list[Document]):
-        """
-        Ajoute de nouveaux documents au vectorstore existant.
+    # def add_documents(self, documents: list[Document]):
+    #     """
+    #     Ajoute de nouveaux documents au vectorstore existant.
         
-        Args:
-            documents: Liste de Documents à ajouter
-        """
-        if self.vectorstore is None:
-            logger.error("❌ VectorStore non initialisé")
-            raise ValueError("VectorStore non initialisé")
+    #     Args:
+    #         documents: Liste de Documents à ajouter
+    #     """
+    #     if self.vectorstore is None:
+    #         logger.error("❌ VectorStore non initialisé")
+    #         raise ValueError("VectorStore non initialisé")
         
-        logger.info(f"➕ Ajout de {len(documents)} nouveaux documents...")
-        self.vectorstore.add_documents(documents)
-        logger.info("✅ Documents ajoutés avec succès")
+    #     logger.info(f"➕ Ajout de {len(documents)} nouveaux documents...")
+    #     self.vectorstore.add_documents(documents)
+    #     logger.info("✅ Documents ajoutés avec succès")

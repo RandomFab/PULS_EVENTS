@@ -22,7 +22,8 @@ PULS_EVENTS
 ├── requirements.txt         # Dépendances Python
 ├── .gitignore               # Fichiers à ignorer par Git
 ├── config/                  # Fichiers de configuration
-│   ├── config.py          # Variables globales (API keys, etc.)
+│   ├── config.py            # Variables globales (API keys, etc.)
+│   ├── logger.py            # Logger message infos/warning/error
 │   └── __init__.py
 │
 ├── src/                     # Code source principal
@@ -32,33 +33,36 @@ PULS_EVENTS
 │   │   └── __init__.py
 │   │
 │   ├── rag/                 # Logique RAG
-│   │   ├── retriever.py     # Recherche dans la base de connaissances
+│   │   ├── chunker.py       # Découpage du texte en chunks
 │   │   ├── embedder.py      # Génération des embeddings
-│   │   ├── pipeline.py      # Orchestration RAG
+│   │   ├── langchain_faiss_indexer.py      # Création des base de données Faiss
+│   │   ├── retriever.py     # Recherche dans la base de connaissances + LLM
 │   │   └── __init__.py
 │   │
-│   ├── models/              # Modèles IA (LLM, embeddings)
-│   │   ├── mistral_client.py
+│   ├── Scripts/              # Execution d'instance de code
+│   │   ├── build_embeddings.py # Création de vecteurs
+│   │   ├── build_index_langchain.py # Création de la base faiss
+│   │   ├── data_processing.py # récupération et traitement des données openagenda
 │   │   └── __init__.py
 │   │
 │   ├── utils/               # Fonctions utilitaires
-│   │   ├── logger.py
-│   │   ├── openagenda_client.py
+│   │   ├── openagenda_client.py # class pour client openagenda
 │   │   └── __init__.py
 │   │
 │   └── __init__.py
 │
 ├── data/                    # Données (données,base de connaissances, embeddings) 
-│   ├── documents/
 │   ├── raw/
-│   │  └── events_rennes_metropole.json
+│   │  └── events_rennes_metropole_raw.json
 │   ├── processed/
-│   │  └── events_musique_35.csv
-│   └── embeddings/
-│
+│   │  └── events_rennes_metropole_processed.csv
+│   ├── embeddings/
+│   │  └── embeddings.json
+│   └── index
+│      └── index.faiss       # Base de données FAISS
 ├── tests/                   # Tests unitaires et d’intégration
-│   ├── test_api.py
-│   ├── test_rag.py
+│   ├── test_langchain_search.py # test des chunks retournés 
+│   ├── test_retriever_QA.py # test de l'interaction LLM + retriever
 │   └── __init__.py
 │
 └── docker/                  # Fichiers Docker si nécessaire
