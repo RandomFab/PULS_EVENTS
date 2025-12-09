@@ -70,15 +70,15 @@ Produire une réponse concise, fiable et directement appuyée sur les documents.
 ---------------------
 DOCUMENTS:
 {context}
----------------------
-
+---
 QUESTION DE L’UTILISATEUR :
 {question}
-
+---
 INSTRUCTION :
 En vous basant UNIQUEMENT sur le DOCUMENTS ci-dessus, répondez de manière exacte, factuelle et pertinente.
 Si les DOCUMENTS ne contient pas l’information, dites-le explicitement et proposez une alternative présente dans les documents.
 """
+
 
 # --- Configuration des chemins d'acces ---
     # --- racine de base ---
