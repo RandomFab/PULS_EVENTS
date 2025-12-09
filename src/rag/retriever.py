@@ -4,7 +4,7 @@ from langchain_mistralai import ChatMistralAI
 from src.rag.langchain_faiss_indexer import LangChainFaissIndexer
 from src.rag.embedder import Embedder
 from langchain_core.output_parsers import StrOutputParser
-from config.config import APP_TITLE,MODEL_NAME,MISTRAL_API_KEY,EMBEDDING_MODEL
+from config.config import APP_TITLE,MODEL_NAME,MISTRAL_API_KEY,EMBEDDING_MODEL,CONTEXT
 from config.logger import logger
 
 class SimpleRetriever():
@@ -27,7 +27,7 @@ class SimpleRetriever():
             
             # Initialisation du LLM
             logger.debug(f"🤖 Initialisation du LLM avec {model_name}")
-            self.llm = ChatMistralAI(api_key=api_key, model_name=model_name)
+            self.llm = ChatMistralAI(api_key=api_key, model_name=model_name,temperature=0.2,top_p=0.9,max_tokens=512)
             
             # Initialisation de l'indexer
             logger.debug(f"📚 Initialisation de l'indexer avec {index_dir}")
@@ -97,17 +97,7 @@ class SimpleRetriever():
                 return "Je n'ai pas trouvé d'informations pertinentes pour répondre à votre question."
             
             # Construction du template
-            template = ChatPromptTemplate.from_template("""
-                                        Tu es un assistant pour les évenements musicaux de Rennes métropole.
-                                        Ton nom est {app_title}.
-                                        Si tu ne connais pas la réponse à la question, dis que tu ne sais pas.
-
-                                        Contexte : {context}
-
-                                        Question : {question}
-
-                                        Réponse :
-                                                    """)
+            template = ChatPromptTemplate.from_template(CONTEXT)
             
             # Construction de la chaîne
             logger.debug("🔗 Construction de la chaîne de génération...")

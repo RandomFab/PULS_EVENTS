@@ -6,4 +6,4 @@ retrieverQA = SimpleRetriever(index_dir=INDEX_PATH,api_key=MISTRAL_API_KEY,embed
 print("\n" + "="*60)
 print("📌 EXEMPLE 1 : Réponse simple")
 print("="*60)
-retrieverQA.answer_query('y a t il des évenements rock à Pacé ?')
+retrieverQA.answer_query('y a t il des évenements jazz à Pacé ?')
