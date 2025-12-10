@@ -58,3 +58,23 @@ def rebuild():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Une erreur est survenue : {str(e)}"
             )
+    
+@router.post('/search_raw')
+def search_raw(query:str = "concert jazz Pacé"):
+    """
+    Permet de récupérer les K churns les plus proche de la requête.
+    Non récupérons donc des churns bruts, non retravaillé par un LLM
+    
+    :param query: Description
+    :type query: str
+    """
+    try:
+
+        results = retriever.indexer.search(query=query,k=5,score_threshold=None)
+        churns = [{'event_id' : docs.metadata.get('event_id'),'title':docs.metadata.get('title'),'location_address':docs.metadata.get('location_address')} for docs, score in results]
+        return {'status':'success', 'message':f"Voici les {len(churns)} résultats les plus proche : {churns}"}
+    except Exception as e :
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Une erreur est survenue : {str(e)}"
+        )
