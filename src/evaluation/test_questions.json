@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Je cherche un événement sur le thème du féminisme, as-tu des suggestions ?",
+    "ground_truth": "Oui, vous pouvez assister à 'PIONNIÈRES! · DEBOUT + Midori Takada' le 22 janvier 2026 au Théâtre l'Aire Libre, ou à l'événement 'LE PRINTEMPS DES FEMMES' le 27 juin 2025 à la maison de quartier de Villejean."
+  },
+  {
+    "question": "Qu'est-ce qu'il y a à voir le jeudi 8 janvier 2026 ?",
+    "ground_truth": "Le jeudi 8 janvier 2026 à 20h30, le spectacle 'Bien, reprenons !' est présenté à l'Espace Beausoleil de Pont-Péan. C'est un roadtrip musical et théâtral."
+  },
+  {
+    "question": "Quels sont les événements prévus à la MJC Pacé ?",
+    "ground_truth": "Plusieurs événements sont prévus à la MJC Pacé (Espace Le Goffic), notamment : 'Musique et danse' (6 fév 2026), 'SEVENADUR' (28 fév 2026), 'Fiesta Flamenca' (10-11 avr 2026), 'Un piano à la mer' (7 déc 2025), 'Les Lavandières de la nuit' (19 oct 2025), 'ARIA' (18 oct 2025) et 'Quairo' (10 oct 2025)."
+  },
+  {
+    "question": "C'est quand la fête de la Bretagne à Bruz ?",
+    "ground_truth": "La Fête de la Bretagne à Bruz a lieu le samedi 17 mai 2025 à partir de 15h30, Place du Vert Buisson, avec un voyage culinaire et musical."
+  },
+  {
+    "question": "Quel temps fera-t-il pour le concert en plein air ?",
+    "ground_truth": "Je ne suis pas en mesure de vous donner les prévisions météo. Je peux seulement vous informer sur les événements, comme le concert en plein air 'LGMX' le 20 juin 2025 à Pont-Péan ou l'Open Air de l'Antipode le 28 juin 2025."
+  }
+]

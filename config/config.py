@@ -89,4 +89,6 @@ EMBEDDINGS_PATH = BASE_DIR / 'Data' / 'embeddings' / 'embeddings.json'
     # --- Indexation ---
 INDEX_PATH = BASE_DIR / "Data" / "index" 
 METADATA_PATH = BASE_DIR / "Data" / "index" / 'faiss_metadata.json'
-
+    # --- Evaluation ---
+TEST_QUESTION_PATH = BASE_DIR / "src" / "evaluation" / "test_questions.json"
+TESTSET_PATH = BASE_DIR / "src" / "evaluation" / "testset.json"
