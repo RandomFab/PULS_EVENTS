@@ -1,0 +1,7 @@
+[
+    {
+        "question": "Je cherche un \u00e9v\u00e9nement sur le th\u00e8me du f\u00e9minisme, as-tu des suggestions ?",
+        "ground_truth": "Oui, vous pouvez assister \u00e0 'PIONNI\u00c8RES! \u00b7 DEBOUT + Midori Takada' le 22 janvier 2026 au Th\u00e9\u00e2tre l'Aire Libre, ou \u00e0 l'\u00e9v\u00e9nement 'LE PRINTEMPS DES FEMMES' le 27 juin 2025 \u00e0 la maison de quartier de Villejean.",
+        "documents": [
+            [
+                
