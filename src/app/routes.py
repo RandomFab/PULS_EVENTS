@@ -25,30 +25,27 @@ class UpdateDate(BaseModel):
 
 router = APIRouter()
 
-@router.get('/health_router',summary="S'assurer que l'API fonctionne")
+@router.get('/health_router',summary="S'assurer que l'API fonctionne",tags=['API HEALTH'])
 def health_router():
     """
     Retourne le statut de santé de l'API via router
     """
     return {'status':'Router ok'}
 
-@router.get('/index_info',summary="Consulter les info de l'index Faiss")
+@router.get('/index_info',summary="Consulter les info de l'index Faiss",tags=['GET INFOS'])
 def get_index_info():
     """
     Retourne les informations de l'indexer
     """
     return retriever.indexer.index_info()
 
-@router.post('/ask',summary="Poser une questions")
-def ask(query:Ask):
+@router.post('/ask',summary="Poser une questions",tags=['USE RAG'])
+def ask(payload:Ask):
     """
     Permet de poser une question concernant les évenement musicaux de Rennes.
     Renvoie une réponse généré par LLM sur la base des évenements de Rennes
-    
-    :param query: Description
-    :type query: str
     """
-    response = retriever.answer_query(query=query)
+    response = retriever.answer_query(query=payload.query)
 
     return {
         "status": "success",
@@ -58,7 +55,7 @@ def ask(query:Ask):
         }
     }
 
-@router.post('/rebuild',summary="Re créer l'index")
+@router.post('/rebuild',summary="Re créer l'index",tags=['USE RAG'])
 def rebuild():
     """
     Permet de re créer ou re généré la base index Faiss
@@ -79,18 +76,15 @@ def rebuild():
             detail=f"Une erreur est survenue : {str(e)}"
             )
     
-@router.post('/search_raw')
-def search_raw(query:SearchRaw):
+@router.post('/search_raw',tags=['USE RAG'])
+def search_raw(payload:SearchRaw):
     """
     Permet de récupérer les K churns les plus proche de la requête.
     Non récupérons donc des churns bruts, non retravaillé par un LLM
-    
-    :param query: Description
-    :type query: str
     """
     try:
 
-        results = retriever.indexer.search(query=query,k=5,score_threshold=None)
+        results = retriever.indexer.search(query=payload.query,k=5,score_threshold=None)
         churns = [{'event_id' : docs.metadata.get('event_id'),'title':docs.metadata.get('title'),'location_address':docs.metadata.get('location_address')} for docs, score in results]
         return {'status':'success', 'message':f"Voici les {len(churns)} résultats les plus proche : {churns}"}
     except Exception as e :
@@ -99,10 +93,13 @@ def search_raw(query:SearchRaw):
             detail=f"Une erreur est survenue : {str(e)}"
         )
 
-@router.post('/update_datas')
+@router.post('/update_datas',tags=['USE RAG'])
 def update_datas(dates:UpdateDate):
+    """Met à jour les événements entre deux dates, reconstruit les embeddings et rebuild l'index.
+    Retourne les informations de l'index mis à jour ou lève une HTTPException en cas d'erreur.
+    """
     try:
-        update_events(start_date=UpdateDate.start_date,end_date=UpdateDate.end_date)
+        update_events(start_date=dates.start_date,end_date=dates.end_date)
         build_embeddings(retriever.embedder)
         rebuild()
         infos = get_index_info()

@@ -8,7 +8,7 @@ app = FastAPI(
 )
 app.include_router(router)
 
-@app.get('/')
+@app.get('/',tags=['API HEALTH'])
 def root():
     """
     Message renvoyé sur le chemin root
