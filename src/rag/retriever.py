@@ -4,7 +4,7 @@ from langchain_mistralai import ChatMistralAI
 from src.rag.langchain_faiss_indexer import LangChainFaissIndexer
 from src.rag.embedder import Embedder
 from langchain_core.output_parsers import StrOutputParser
-from config.config import APP_TITLE,MODEL_NAME,MISTRAL_API_KEY,EMBEDDING_MODEL,CONTEXT
+from config.config import APP_TITLE,MODEL_NAME,MISTRAL_API_KEY,EMBEDDING_MODEL,RAG_PROMPT
 from config.logger import logger
 
 class SimpleRetriever():
@@ -97,7 +97,7 @@ class SimpleRetriever():
                 return "Je n'ai pas trouvé d'informations pertinentes pour répondre à votre question."
             
             # Construction du template
-            template = ChatPromptTemplate.from_template(CONTEXT)
+            template = ChatPromptTemplate.from_template(RAG_PROMPT)
             
             # Construction de la chaîne
             logger.debug("🔗 Construction de la chaîne de génération...")
@@ -119,7 +119,7 @@ class SimpleRetriever():
             })
             
             logger.info("✅ Réponse générée avec succès")
-            logger.info(response)
+            return response
             
         except Exception as e:
             logger.error(f"❌ Erreur lors de la génération de la réponse: {e}")
