@@ -4,7 +4,24 @@ from src.app.services.data_service import update_events
 from src.app.services.embed_service import build_embeddings
 from fastapi import HTTPException, status
 from config.config import EMBEDDINGS_PATH
+from pydantic import BaseModel, Field,field_validator
+import datetime
 
+class Ask(BaseModel):
+    query: str = Field('Quels sont les évenements rock à rennes ?', max_length=200)
+class SearchRaw(BaseModel):
+    query: str = Field('concert jazz Pacé', max_length=100)
+class UpdateDate(BaseModel):
+    start_date:str = Field('01/01/25',pattern=r"^\d{2}/\d{2}/\d{2}$")
+    end_date:str = Field('31/12/25',pattern=r"^\d{2}/\d{2}/\d{2}$")
+
+    @field_validator("start_date","end_date")
+    def check_valid_date(cls, v):
+        try:
+            datetime.datetime.strptime(v, "%d/%m/%y")
+        except ValueError:
+            raise ValueError("La date doit être valide et au format JJ/MM/AA.")
+        return v
 
 router = APIRouter()
 
@@ -23,7 +40,7 @@ def get_index_info():
     return retriever.indexer.index_info()
 
 @router.post('/ask',summary="Poser une questions")
-def ask(query:str = 'Quels sont les évenements rock à rennes ?'):
+def ask(query:Ask):
     """
     Permet de poser une question concernant les évenement musicaux de Rennes.
     Renvoie une réponse généré par LLM sur la base des évenements de Rennes
@@ -63,7 +80,7 @@ def rebuild():
             )
     
 @router.post('/search_raw')
-def search_raw(query:str = "concert jazz Pacé"):
+def search_raw(query:SearchRaw):
     """
     Permet de récupérer les K churns les plus proche de la requête.
     Non récupérons donc des churns bruts, non retravaillé par un LLM
@@ -83,9 +100,9 @@ def search_raw(query:str = "concert jazz Pacé"):
         )
 
 @router.post('/update_datas')
-def update_datas(start_date:str = '01/01/25',end_date:str = '01/01/27'):
+def update_datas(dates:UpdateDate):
     try:
-        update_events(start_date=start_date,end_date=end_date)
+        update_events(start_date=UpdateDate.start_date,end_date=UpdateDate.end_date)
         build_embeddings(retriever.embedder)
         rebuild()
         infos = get_index_info()
