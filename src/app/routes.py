@@ -1,7 +1,10 @@
 from fastapi import APIRouter
 from src.app.services.rag_service import retriever
+from src.app.services.data_service import update_events
+from src.app.services.embed_service import build_embeddings
 from fastapi import HTTPException, status
 from config.config import EMBEDDINGS_PATH
+
 
 router = APIRouter()
 
@@ -74,6 +77,20 @@ def search_raw(query:str = "concert jazz Pacé"):
         churns = [{'event_id' : docs.metadata.get('event_id'),'title':docs.metadata.get('title'),'location_address':docs.metadata.get('location_address')} for docs, score in results]
         return {'status':'success', 'message':f"Voici les {len(churns)} résultats les plus proche : {churns}"}
     except Exception as e :
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Une erreur est survenue : {str(e)}"
+        )
+
+@router.post('/update_datas')
+def update_datas(start_date:str = '01/01/25',end_date:str = '01/01/27'):
+    try:
+        update_events(start_date=start_date,end_date=end_date)
+        build_embeddings(retriever.embedder)
+        rebuild()
+        infos = get_index_info()
+        return {'status':'success','message' : f"✅ La mise a jour des données et le rebuild ont été effectués avec succès. \n Nouvelles informations de l'index : {infos} "}
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Une erreur est survenue : {str(e)}"
