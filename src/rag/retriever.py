@@ -25,9 +25,15 @@ class SimpleRetriever():
             logger.debug(f"📊 Initialisation de l'embedder avec {embedding_model}")
             self.embedder = Embedder(api_key=api_key, model=embedding_model)
             
-            # Initialisation du LLM
+            # Initialisation du LLM avec paramètres optimisés pour chatbot culturel
             logger.debug(f"🤖 Initialisation du LLM avec {model_name}")
-            self.llm = ChatMistralAI(api_key=api_key, model_name=model_name,temperature=0.2,top_p=0.9,max_tokens=512)
+            self.llm = ChatMistralAI(
+                api_key=api_key, 
+                model_name=model_name,
+                temperature=0.5,    # Augmenté pour plus de créativité dans les recommandations
+                top_p=0.9,
+                max_tokens=1024     # Doublé pour permettre des réponses plus complètes
+            )
             
             # Initialisation de l'indexer
             logger.debug(f"📚 Initialisation de l'indexer avec {index_dir}")
@@ -99,16 +105,9 @@ class SimpleRetriever():
             # Construction du template
             template = ChatPromptTemplate.from_template(RAG_PROMPT)
             
-            # Construction de la chaîne
+            # Construction de la chaîne (simplifié)
             logger.debug("🔗 Construction de la chaîne de génération...")
-            chain = (
-                {"app_title" : lambda x:APP_TITLE,
-                 "context": lambda x:x['context'],
-                 'question':lambda x: x['question']}
-                |template
-                |self.llm
-                |StrOutputParser()
-            )
+            chain = template | self.llm | StrOutputParser()
             
             # Génération de la réponse
             logger.debug("✨ Génération de la réponse...")

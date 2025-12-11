@@ -1,128 +1,334 @@
-# 📘 README.md — POC RAG “Puls-Events”
+# 📘 PULS_EVENTS - Mix'n'Renn
 
-**Assistant intelligent de recommandation d’événements culturels (Ille-et-Vilaine)**
+**Assistant intelligent de recommandation d'événements culturels de Rennes Métropole**
+
+[![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.124+-green.svg)](https://fastapi.tiangolo.com/)
+[![LangChain](https://img.shields.io/badge/LangChain-1.1+-orange.svg)](https://python.langchain.com/)
+[![Mistral AI](https://img.shields.io/badge/Mistral-AI-purple.svg)](https://mistral.ai/)
 
 ## 🎯 Objectif du projet
 
-Le but du POC final sera de construire un système RAG capable de recommander des événements musicaux de la ville de Rennes sur l'année 2024, en s’appuyant sur :
-- l’API OpenAgenda,
-- un embedding Mistral,
-- un index vectoriel FAISS,
-- et une API REST permettant de questionner le chatbot.
+Système RAG (Retrieval-Augmented Generation) complet pour recommander des événements musicaux de Rennes Métropole en temps réel, utilisant :
+- 🌐 **API OpenAgenda** pour les données d'événements
+- 🧠 **Mistral AI** pour embeddings et génération de réponses
+- 📊 **FAISS** pour l'indexation vectorielle
+- ⚡ **FastAPI** pour l'API REST
+- 🔗 **LangChain** pour l'orchestration RAG
 
-## 🧱 Étape 1 — Mise en place de l’environnement 🔧
+## ✨ Fonctionnalités
 
-### 🗂 Structure du projet (prévisionnelle)
+- ✅ **Recherche intelligente** d'événements musicaux par requête naturelle
+- ✅ **API REST complète** avec documentation interactive (Swagger)
+- ✅ **Scripts CLI** pour automatisation (pipeline complet ou étapes individuelles)
+- ✅ **Mise à jour dynamique** des données via endpoints
+- ✅ **Évaluation RAG** avec métriques Ragas
+- ✅ **Gestion robuste** des erreurs et validation des données
+- ✅ **Architecture en couches** professionnelle et évolutive
+- ✅ **Services métier réutilisables** (Dependency Inversion Principle)
 
-L’objectif est d’organiser un dépôt clair et évolutif dès le début.
+---
+
+## 🏗️ Architecture du projet
+
+### Architecture en Couches (Layered Architecture)
+
+Le projet suit une **architecture en couches** avec séparation claire des responsabilités :
+
 ```
-PULS_EVENTS
-│
-├── README.md                # Documentation du projet
-├── requirements.txt         # Dépendances Python
-├── .gitignore               # Fichiers à ignorer par Git
-├── config/                  # Fichiers de configuration
-│   ├── config.py            # Variables globales (API keys, etc.)
-│   ├── logger.py            # Logger message infos/warning/error
-│   └── __init__.py
-│
-├── src/                     # Code source principal
-│   ├── app/                 # Endpoints API
-│   │   ├── main.py          # Point d'entrée FastAPI ou Flask
-│   │   ├── routes.py        # Définition des routes
-│   │   └── __init__.py
-│   │
-│   ├── rag/                 # Logique RAG
-│   │   ├── chunker.py       # Découpage du texte en chunks
-│   │   ├── embedder.py      # Génération des embeddings
-│   │   ├── langchain_faiss_indexer.py      # Création des base de données Faiss
-│   │   ├── retriever.py     # Recherche dans la base de connaissances + LLM
-│   │   └── __init__.py
-│   │
-│   ├── Scripts/              # Execution d'instance de code
-│   │   ├── build_embeddings.py # Création de vecteurs
-│   │   ├── build_index_langchain.py # Création de la base faiss
-│   │   ├── data_processing.py # récupération et traitement des données openagenda
-│   │   └── __init__.py
-│   │
-│   ├── utils/               # Fonctions utilitaires
-│   │   ├── openagenda_client.py # class pour client openagenda
-│   │   └── __init__.py
-│   │
-│   └── __init__.py
-│
-├── data/                    # Données (données,base de connaissances, embeddings) 
-│   ├── raw/
-│   │  └── events_rennes_metropole_raw.json
-│   ├── processed/
-│   │  └── events_rennes_metropole_processed.csv
-│   ├── embeddings/
-│   │  └── embeddings.json
-│   └── index
-│      └── index.faiss       # Base de données FAISS
-├── tests/                   # Tests unitaires et d’intégration
-│   ├── test_langchain_search.py # test des chunks retournés 
-│   ├── test_retriever_QA.py # test de l'interaction LLM + retriever
-│   └── __init__.py
-│
-└── docker/                  # Fichiers Docker si nécessaire
-    ├── Dockerfile
-    └── docker-compose.yml
+┌─────────────────────────────────────────────────────────┐
+│              PRESENTATION LAYER                         │
+│  (Interfaces utilisateur : API REST + Scripts CLI)      │
+│                                                         │
+│  API REST (FastAPI)    |    CLI Scripts                 │
+│  └─ routes.py          |    └─ run_pipeline.py          │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ↓
+┌─────────────────────────────────────────────────────────┐
+│                DOMAIN LAYER                             │
+│      (Logique métier - Cœur de l'application)           │
+│                                                         │
+│  EventService  |  EmbeddingService  |  RagService       │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ↓
+┌─────────────────────────────────────────────────────────┐
+│     RAG LAYER (Techniques) + INFRASTRUCTURE             │
+│                                                         │
+│  Embedder | Retriever | FAISS | OpenAgendaClient        │
+└─────────────────────────────────────────────────────────┘
 ```
 
-### ▶️ Installation et mise en route
+**Avantages** :
+- ✅ **Réutilisabilité** : Les services métier sont utilisables par l'API ET les scripts CLI
+- ✅ **Testabilité** : Injection de dépendances facilitant les tests
+- ✅ **Maintenabilité** : Séparation claire des responsabilités
+- ✅ **Évolutivité** : Facile d'ajouter de nouvelles interfaces (GUI, webhooks, etc.)
 
-1️⃣ **Cloner le dépôt**
+📖 **Pour en savoir plus** : Consultez `Documents/ARCHITECTURE.md`
+
+### Structure des Fichiers
+
+```
+PULS_EVENTS/
+│
+├── 📚 Documentation
+│   ├── README.md                          # Ce fichier
+│   └── Documents/
+│       ├── ARCHITECTURE.md                # Architecture détaillée
+│       ├── GUIDE_MIGRATION.md             # Guide de migration
+│       └── REFACTORING_COMPLET.md         # Résumé du refactoring
+│
+├── ⚙️ Configuration
+│   ├── config/
+│   │   ├── config.py          # Configuration centralisée
+│   │   └── logger.py          # Logger configuré
+│   ├── .env                   # Variables d'environnement (non versionné)
+│   ├── .gitignore
+│   ├── requirements.txt
+│   └── pyproject.toml
+│
+├── 🚀 Application
+│   └── src/
+│       ├── presentation/      # 🎨 Interfaces utilisateur
+│       │   ├── api/          # API REST (FastAPI)
+│       │   │   ├── main.py
+│       │   │   └── routes.py
+│       │   └── cli/          # Scripts en ligne de commande
+│       │       ├── process_events.py
+│       │       ├── generate_embeddings.py
+│       │       ├── build_index.py
+│       │       └── run_pipeline.py
+│       │
+│       ├── domain/           # 🧠 Logique métier (cœur)
+│       │   ├── models/       # Modèles de données
+│       │   └── services/     # Services métier réutilisables
+│       │       ├── event_service.py
+│       │       ├── embedding_service.py
+│       │       └── rag_service.py
+│       │
+│       ├── infrastructure/   # 🔌 Accès externe
+│       │   └── openagenda_client.py
+│       │
+│       ├── rag/             # 🤖 Composants RAG techniques
+│       │   ├── embedder.py
+│       │   ├── chunker.py
+│       │   ├── retriever.py
+│       │   └── langchain_faiss_indexer.py
+│       │
+│       └── evaluation/      # 📊 Évaluation RAG
+│
+├── 📊 Données
+│   └── Data/
+│       ├── raw/             # Données brutes JSON
+│       ├── processed/       # Données traitées CSV
+│       ├── embeddings/      # Vecteurs d'embeddings
+│       └── index/           # Index FAISS
+│
+└── 🧪 Tests
+    └── tests/
+```
+
+---
+
+## 🚀 Installation Rapide
+
+### Prérequis
+- Python 3.13+
+- pip
+- Git
+
+### 1️⃣ Cloner et setup
+
 ```bash
+# Cloner le dépôt
 git clone https://github.com/RandomFab/PULS_EVENTS.git
-cd PULS_EVENT
+cd PULS_EVENTS
+
+# Créer l'environnement virtuel
+python -m venv .venv
+
+# Activer l'environnement
+.venv\Scripts\activate  # Windows
+source .venv/bin/activate  # Linux/Mac
+
+# Installer les dépendances
+pip install -r requirements.txt
 ```
 
-2️⃣ **Créer un environnement virtuel**
+### 2️⃣ Configuration
+
+Créez un fichier `.env` à la racine :
+
+```env
+# Clés API (obligatoires)
+MISTRAL_API_KEY=votre_cle_mistral
+OPENAGENDA_API_KEY=votre_cle_openagenda
+```
+
+### 3️⃣ Initialiser les données
+
+**Option A : Pipeline complet automatique** (recommandé)
 ```bash
-python -m venv env
-source env/bin/activate      # macOS / Linux
-env\Scripts\activate         # Windows
+# Exécute toutes les étapes : récupération → embeddings → index
+python -m src.presentation.cli.run_pipeline
+
+# Avec dates personnalisées
+python -m src.presentation.cli.run_pipeline --start-date 01/06/25 --end-date 31/12/25
 ```
 
-3️⃣ **Installer les dépendances**
+**Option B : Scripts individuels**
+```bash
+# 1. Récupérer les événements OpenAgenda
+python -m src.presentation.cli.process_events
+
+# 2. Générer les embeddings
+python -m src.presentation.cli.generate_embeddings
+
+# 3. Construire l'index FAISS
+python -m src.presentation.cli.build_index
+```
+
+### 4️⃣ Lancer l'API
+
+```bash
+# Mode développement
+uvicorn src.presentation.api.main:app --reload
+
+# Mode production
+uvicorn src.presentation.api.main:app --host 0.0.0.0 --port 8000
+```
+
+🎉 **L'API est prête !**
+- 📖 SWAGGER : http://localhost:8000/docs
+
+---
+
+## 📡 Utilisation de l'API
+
+### Endpoints Principaux
+
+#### 💬 Poser une question
+```bash
+POST /ask
+{
+  "query": "Quels sont les concerts rock ce weekend ?"
+}
+```
+
+#### 🔍 Recherche brute
+```bash
+POST /search_raw
+{
+  "query": "jazz"
+}
+```
+
+#### 🔄 Mettre à jour les données
+```bash
+POST /update_datas
+{
+  "start_date": "01/01/25",
+  "end_date": "31/12/25"
+}
+```
+
+#### 🏗️ Reconstruire l'index
+```bash
+POST /rebuild
+```
+
+#### 📊 Évaluer le RAG
+```bash
+GET /evaluate_rag
+```
+
+---
+
+## 🧪 Tests
+
+```bash
+# Tous les tests
+pytest
+
+# Tests spécifiques
+pytest tests/test_api.py
+
+# Avec couverture
+pytest --cov=src
+```
+
+---
+
+## 🔒 Sécurité
+
+⚠️ **Ne jamais commiter le fichier `.env`**  
+Les clés API doivent rester secrètes.
+
+---
+
+## 🐛 Dépannage
+
+### "Module not found"
 ```bash
 pip install -r requirements.txt
 ```
 
-4️⃣ **Tester l’environnement**
+### "MISTRAL_API_KEY not found"
+Vérifier que `.env` existe et contient la clé.
 
-Dans un terminal Python / Jupyter :
-```python
-import faiss
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
-from mistral import MistralClient
-
-print("Imports OK 🎉")
-```
-Si le message s’affiche → environnement validé.
-
-### 📦 requirements.txt 
-
-```
-dependencies = [
-    "dotenv>=0.9.9",
-    "faiss-cpu>=1.13.0",
-    "ipykernel>=7.1.0",
-    "langchain>=1.1.0",
-    "mistralai>=1.9.11",
-    "pandas>=2.3.3",
-    "requests>=2.32.5",
-]
+### "Index FAISS introuvable"
+```bash
+python -m src.presentation.cli.build_index
+# Ou exécuter le pipeline complet
+python -m src.presentation.cli.run_pipeline
 ```
 
-### 🔒 La clé API Mistral
+### "ModuleNotFoundError: No module named 'src.app'"
+L'ancienne architecture a été refactorisée. Utilisez les nouveaux chemins :
+- ❌ `src.app.main` → ✅ `src.presentation.api.main`
+- 📖 Consultez `Documents/GUIDE_MIGRATION.md` pour plus de détails
 
-La clé API Mistral doit être stockée dans un fichier `.env` non versionné.
+## 📈 Roadmap
 
-### 🌍 Zone géographique ciblée
+### ✅ Complété
+- [x] API REST avec FastAPI
+- [x] Pipeline RAG complet
+- [x] Validation et gestion d'erreurs
+- [x] Documentation complète
+- [x] **Architecture en couches** (Layered Architecture)
+- [x] **Services métier réutilisables** (API + CLI)
+- [x] **Pipeline CLI orchestré** avec `run_pipeline.py`
+- [x] **Documentation architecturale** (ARCHITECTURE.md, GUIDE_MIGRATION.md)
 
-Le système RAG final ciblera les événements:
-- Situés à Rennes (35)
-- Musicaux
+### 🔄 En cours
+- [ ] Tests unitaires complets
+- [ ] Cache embeddings
+- [ ] Monitoring
+
+### 🎯 Futur
+- [ ] Interface web (Streamlit)
+- [ ] Dockerisation
+- [ ] CI/CD
+- [ ] Modèles de domaine (Pydantic)
+
+---
+
+## 👤 Auteur
+
+**Fabien** - [RandomFab](https://github.com/RandomFab)
+
+---
+
+## 🙏 Remerciements
+
+- [Mistral AI](https://mistral.ai/) pour les modèles
+- [OpenAgenda](https://openagenda.com/) pour l'API
+- [LangChain](https://python.langchain.com/) pour le framework
+- [FastAPI](https://fastapi.tiangolo.com/) pour l'API
+
+---
+
+**⭐ Si ce projet vous est utile, donnez-lui une étoile !**
+```
