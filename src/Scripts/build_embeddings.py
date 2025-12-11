@@ -72,9 +72,9 @@ for i in tqdm(range(0, len(all_chunk_texts), EMBEDDING_BATCH_SIZE),
             
     except Exception as e:
         logger.error(f"❌ Erreur lors du batch {i//EMBEDDING_BATCH_SIZE + 1}: {e}")
-        logger.info("⏸️  Pause de 10 secondes avant de réessayer...")
+        logger.info("⏸️  Pause de 3 secondes avant de réessayer...")
         import time
-        time.sleep(10)
+        time.sleep(3)
         # Retry
         try:
             batch_vectors = embedder.embed_texts(batch)
