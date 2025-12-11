@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from config.config import APP_TITLE
 from src.app.routes import router
 
@@ -8,9 +9,9 @@ app = FastAPI(
 )
 app.include_router(router)
 
-@app.get('/',tags=['API HEALTH'])
+@app.get('/', tags=['API HEALTH'])
 def root():
     """
-    Message renvoyé sur le chemin root
+    Redirige vers la documentation interactive
     """
-    return {f"Bonjour et bienvenue sur l'API {APP_TITLE}"}
+    return RedirectResponse(url="/docs")
