@@ -6,12 +6,12 @@ from ragas.metrics import (
     Faithfulness
 )
 from ragas.llms import llm_factory
-from ragas.embeddings import embedding_factory
+from ragas.embeddings import LangchainEmbeddingsWrapper
 from datasets import Dataset
 import json
 import os
 from openai import OpenAI
-from mistralai import Mistral
+from langchain_mistralai import MistralAIEmbeddings
 
 from config.config import TESTSET_PATH, MISTRAL_API_KEY
 
@@ -23,9 +23,18 @@ def ragas_evaluation():
     # Set dummy OpenAI key to prevent errors (won't be used)
     os.environ['OPENAI_API_KEY'] = 'dummy-key'
 
-    with open(TESTSET_PATH, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
+    # Check if testset file exists
+    try:
+        with open(TESTSET_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Erreur lors du parsing du fichier JSON : {e}")
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Le fichier testset n'existe pas : {TESTSET_PATH}")
+    
+    if not data:
+        raise ValueError("Le fichier testset est vide")
+    
     ds = Dataset.from_list(data)
 
     # Use OpenAI-compatible client for Mistral LLM
@@ -35,9 +44,9 @@ def ragas_evaluation():
     )
     llm = llm_factory('mistral-large-latest', client=client)
 
-    # Use embedding_factory with Mistral client
-    mistral_client = Mistral(api_key=MISTRAL_API_KEY)
-    embeddings = embedding_factory('mistral-embed', client=mistral_client)
+    # Wrap Mistral embeddings for Ragas
+    mistral_embeddings = MistralAIEmbeddings(api_key=MISTRAL_API_KEY)
+    embeddings = LangchainEmbeddingsWrapper(mistral_embeddings)
 
     results = evaluate(
         dataset=ds,

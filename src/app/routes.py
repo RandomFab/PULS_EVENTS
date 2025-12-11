@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from src.app.services.rag_service import retriever
 from src.app.services.data_service import update_events
 from src.app.services.embed_service import build_embeddings
+from src.app.services.evaluation_service import evaluate_current_rag
 from fastapi import HTTPException, status
 from config.config import EMBEDDINGS_PATH
 from pydantic import BaseModel, Field,field_validator
@@ -95,7 +96,8 @@ def search_raw(payload:SearchRaw):
 
 @router.post('/update_datas',tags=['USE RAG'])
 def update_datas(dates:UpdateDate):
-    """Met à jour les événements entre deux dates, reconstruit les embeddings et rebuild l'index.
+    """
+    Met à jour les événements entre deux dates, reconstruit les embeddings et rebuild l'index.
     Retourne les informations de l'index mis à jour ou lève une HTTPException en cas d'erreur.
     """
     try:
@@ -109,3 +111,28 @@ def update_datas(dates:UpdateDate):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Une erreur est survenue : {str(e)}"
         )
+    
+@router.get('/evaluate_rag', summary="Évaluer les performances du système RAG", tags=['EVALUATION'])
+def evaluate_rag():
+    """
+    Lance l'évaluation du système RAG en utilisant Ragas.
+    Retourne les métriques de performance ou un message d'erreur détaillé.
+    """
+    result = evaluate_current_rag()
+    
+    if result.get("status") == "error":
+        # Déterminer le code HTTP approprié selon le type d'erreur
+        if result.get("error_type") == "FileNotFoundError":
+            status_code = status.HTTP_404_NOT_FOUND
+        elif result.get("error_type") == "ValueError":
+            status_code = status.HTTP_400_BAD_REQUEST
+        else:
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            
+        raise HTTPException(
+            status_code=status_code,
+            detail=result.get("message", "Erreur inconnue")
+        )
+    
+    # Succès : retourner les résultats
+    return result
