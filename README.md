@@ -290,28 +290,6 @@ L'ancienne architecture a été refactorisée. Utilisez les nouveaux chemins :
 - ❌ `src.app.main` → ✅ `src.presentation.api.main`
 - 📖 Consultez `Documents/GUIDE_MIGRATION.md` pour plus de détails
 
-## 📈 Roadmap
-
-### ✅ Complété
-- [x] API REST avec FastAPI
-- [x] Pipeline RAG complet
-- [x] Validation et gestion d'erreurs
-- [x] Documentation complète
-- [x] **Architecture en couches** (Layered Architecture)
-- [x] **Services métier réutilisables** (API + CLI)
-- [x] **Pipeline CLI orchestré** avec `run_pipeline.py`
-- [x] **Documentation architecturale** (ARCHITECTURE.md, GUIDE_MIGRATION.md)
-
-### 🔄 En cours
-- [ ] Tests unitaires complets
-- [ ] Cache embeddings
-- [ ] Monitoring
-
-### 🎯 Futur
-- [ ] Interface web (Streamlit)
-- [ ] Dockerisation
-- [ ] CI/CD
-- [ ] Modèles de domaine (Pydantic)
 
 ---
 
