@@ -29,44 +29,149 @@ Système RAG (Retrieval-Augmented Generation) complet pour recommander des évé
 
 ---
 
-## 🏗️ Architecture du projet
+## 📊 Diagrammes Architecturaux
 
-### Architecture en Couches (Layered Architecture)
+### 🏗️ Diagramme de Composants - Architecture UML
 
-Le projet suit une **architecture en couches** avec séparation claire des responsabilités :
-
+```mermaid
+graph TB
+    subgraph PRESENTATION["🎨 Presentation Layer"]
+        API["FastAPI REST API<br/>main.py<br/>routes.py"]
+        CLI["CLI Scripts<br/>run_pipeline.py<br/>process_events.py<br/>generate_embeddings.py"]
+    end
+    
+    subgraph DOMAIN["🧠 Domain Layer - Services Métier"]
+        EventSrv["EventService<br/>• fetch_and_process_events<br/>• _validate_dataframe<br/>• _transform_to_dataframe"]
+        EmbeddingSrv["EmbeddingService<br/>• build_embeddings<br/>• _chunk_texts<br/>• _save_embeddings"]
+        RagSrv["RagService<br/>• search_and_answer<br/>• search_documents<br/>• format_context"]
+    end
+    
+    subgraph RAG["🤖 RAG Layer - Techniques"]
+        Embedder["Embedder<br/>• embed_texts<br/>• embed_query"]
+        Chunker["Chunker<br/>• chunk_documents<br/>• split_text"]
+        Retriever["SimpleRetriever<br/>• answer_query<br/>• search_similar<br/>• _generate_answer"]
+        Indexer["FAISS Indexer<br/>• build_from_embeddings<br/>• load_index<br/>• search"]
+    end
+    
+    subgraph INFRA["🔌 Infrastructure Layer"]
+        OpenAgenda["OpenAgendaClient<br/>• get_events<br/>• get_events_with_keywords<br/>• _build_params"]
+        FileStorage["FileStorage Utils<br/>• save_csv<br/>• save_json<br/>• load_json"]
+    end
+    
+    subgraph EXTERNAL["🌐 Ressources Externes"]
+        MistralAPI["Mistral AI API<br/>• Embeddings<br/>• LLM Generation"]
+        OpenAgendaAPI["OpenAgenda API<br/>• Events Data<br/>• Keywords"]
+    end
+    
+    subgraph DATA["💾 Data Storage"]
+        RawData["Data/raw/<br/>events_rennes.json"]
+        ProcessedData["Data/processed/<br/>events_processed.csv"]
+        EmbeddingsData["Data/embeddings/<br/>embeddings.json"]
+        FaissIndex["Data/index/<br/>faiss_index.index<br/>faiss_metadata.json"]
+    end
+    
+    %% Presentation → Domain
+    API --> EventSrv
+    API --> EmbeddingSrv
+    API --> RagSrv
+    CLI --> EventSrv
+    CLI --> EmbeddingSrv
+    CLI --> RagSrv
+    
+    %% Domain → RAG + Infrastructure
+    EventSrv --> OpenAgenda
+    EventSrv --> FileStorage
+    EmbeddingSrv --> Embedder
+    EmbeddingSrv --> Chunker
+    EmbeddingSrv --> FileStorage
+    RagSrv --> Retriever
+    
+    %% RAG → Infrastructure + External
+    Retriever --> Embedder
+    Retriever --> Indexer
+    Embedder --> MistralAPI
+    Chunker -->|depends on| Retriever
+    
+    %% Infrastructure → External
+    OpenAgenda -->|calls| OpenAgendaAPI
+    Embedder -->|calls| MistralAPI
+    
+    %% Data flows
+    OpenAgenda -->|saves| RawData
+    FileStorage -->|saves| ProcessedData
+    FileStorage -->|saves| EmbeddingsData
+    FileStorage -->|saves| FaissIndex
+    
+    EventSrv -->|reads/writes| ProcessedData
+    EmbeddingSrv -->|reads| ProcessedData
+    EmbeddingSrv -->|reads| EmbeddingsData
+    Retriever -->|reads| FaissIndex
+    Retriever -->|reads| EmbeddingsData
 ```
-┌─────────────────────────────────────────────────────────┐
-│              PRESENTATION LAYER                         │
-│  (Interfaces utilisateur : API REST + Scripts CLI)      │
-│                                                         │
-│  API REST (FastAPI)    |    CLI Scripts                 │
-│  └─ routes.py          |    └─ run_pipeline.py          │
-└────────────────┬────────────────────────────────────────┘
-                 │
-                 ↓
-┌─────────────────────────────────────────────────────────┐
-│                DOMAIN LAYER                             │
-│      (Logique métier - Cœur de l'application)           │
-│                                                         │
-│  EventService  |  EmbeddingService  |  RagService       │
-└────────────────┬────────────────────────────────────────┘
-                 │
-                 ↓
-┌─────────────────────────────────────────────────────────┐
-│     RAG LAYER (Techniques) + INFRASTRUCTURE             │
-│                                                         │
-│  Embedder | Retriever | FAISS | OpenAgendaClient        │
-└─────────────────────────────────────────────────────────┘
+
+### 🔄 Diagramme de Séquence - Requête de Recherche (POST /ask)
+
+```mermaid
+sequenceDiagram
+    actor User as 👤 Utilisateur
+    participant API as 🎨 FastAPI<br/>routes.py
+    participant RagSrv as 🧠 RagService
+    participant Retriever as 🤖 SimpleRetriever
+    participant Embedder as 🔢 Embedder
+    participant MistralEmbed as 🟦 Mistral<br/>Embed API
+    participant Indexer as 📑 FAISS Indexer
+    participant LLM as 🌐 Mistral<br/>LLM API
+
+    User->>API: POST /ask<br/>{"query": "concerts jazz"}
+    activate API
+    Note over API: 1. Validation Pydantic<br/>2. Initialisation services
+
+    API->>RagSrv: search_and_answer(query)
+    activate RagSrv
+
+    RagSrv->>Retriever: answer_query(query)
+    activate Retriever
+
+    Note over Retriever: Phase 1: Embedding de la requête
+    Retriever->>Embedder: embed_query(query)
+    activate Embedder
+    Embedder->>MistralEmbed: POST /embeddings<br/>{"input": "concerts jazz"}
+    activate MistralEmbed
+    MistralEmbed-->>Embedder: embedding vector (1536D)
+    deactivate MistralEmbed
+    Embedder-->>Retriever: query_vector
+    deactivate Embedder
+
+    Note over Retriever: Phase 2: Recherche vectorielle
+    Retriever->>Indexer: search_similar(query_vector, k=5)
+    activate Indexer
+    Note over Indexer: Calcul similarité cosinus<br/>Top-5 documents
+    Indexer-->>Retriever: similar_docs_with_scores
+    deactivate Indexer
+
+    Note over Retriever: Phase 3: Construction contexte
+    Retriever->>Retriever: format_context(documents)
+
+    Note over Retriever: Phase 4: Génération LLM
+    Retriever->>LLM: POST /chat.complete<br/>{"messages": [system, user+context]}
+    activate LLM
+    Note over LLM: Génération réponse<br/>basée sur contexte
+    LLM-->>Retriever: Réponse complète
+    deactivate LLM
+
+    Retriever-->>RagSrv: answer
+    deactivate Retriever
+
+    RagSrv-->>API: answer
+    deactivate RagSrv
+
+    API->>API: Format réponse JSON<br/>{"answer": "...", "sources": [...]}
+
+    API-->>User: 200 OK<br/>{"answer": "Les concerts...",<br/>"sources": [events]}
+    deactivate API
+
+    Note over User,LLM: ⏱️ Latence: ~2-3 secondes<br/>Dépend de Mistral API
 ```
-
-**Avantages** :
-- ✅ **Réutilisabilité** : Les services métier sont utilisables par l'API ET les scripts CLI
-- ✅ **Testabilité** : Injection de dépendances facilitant les tests
-- ✅ **Maintenabilité** : Séparation claire des responsabilités
-- ✅ **Évolutivité** : Facile d'ajouter de nouvelles interfaces (GUI, webhooks, etc.)
-
-📖 **Pour en savoir plus** : Consultez `Documents/ARCHITECTURE.md`
 
 ### Structure des Fichiers
 
@@ -76,9 +181,9 @@ PULS_EVENTS/
 ├── 📚 Documentation
 │   ├── README.md                          # Ce fichier
 │   └── Documents/
-│       ├── ARCHITECTURE.md                # Architecture détaillée
-│       ├── GUIDE_MIGRATION.md             # Guide de migration
-│       └── REFACTORING_COMPLET.md         # Résumé du refactoring
+│       ├── COMPONENT_DIAGRAM.md           # Diagramme de composants UML
+│       ├── SEQUENCE_DIAGRAM.md            # Diagramme de séquence
+│       └── instructions.md                # Instructions du projet
 │
 ├── ⚙️ Configuration
 │   ├── config/
@@ -106,6 +211,7 @@ PULS_EVENTS/
 │       │   └── services/     # Services métier réutilisables
 │       │       ├── event_service.py
 │       │       ├── embedding_service.py
+│       │       ├── evaluation_service.py
 │       │       └── rag_service.py
 │       │
 │       ├── infrastructure/   # 🔌 Accès externe
@@ -117,17 +223,42 @@ PULS_EVENTS/
 │       │   ├── retriever.py
 │       │   └── langchain_faiss_indexer.py
 │       │
-│       └── evaluation/      # 📊 Évaluation RAG
+│       ├── evaluation/      # 📊 Évaluation RAG
+│       │   ├── build_testset.py
+│       │   ├── evaluate_rag.py
+│       │   ├── test_questions.json
+│       │   └── testset.json
+│       │
+│       └── utils/           # 🛠️ Utilitaires
 │
 ├── 📊 Données
 │   └── Data/
 │       ├── raw/             # Données brutes JSON
 │       ├── processed/       # Données traitées CSV
 │       ├── embeddings/      # Vecteurs d'embeddings
-│       └── index/           # Index FAISS
+│       ├── index/           # Index FAISS
+│       └── documents/       # Documents traités
+│
+├── 📓 Notebooks
+│   └── 01_EDA_JSON_RENNES.ipynb  # Analyse exploratoire des données
 │
 └── 🧪 Tests
     └── tests/
+        ├── test_api.py
+        ├── test_chunker.py
+        ├── test_cli_scripts.py
+        ├── test_embedder.py
+        ├── test_embedding_service.py
+        ├── test_embedding_service_extended.py
+        ├── test_evaluation.py
+        ├── test_event_service.py
+        ├── test_event_service_extended.py
+        ├── test_integration_imports.py
+        ├── test_openagenda_client.py
+        ├── test_openagenda_extended.py
+        ├── test_rag_service.py
+        ├── test_retriever_simple.py
+        └── test_routes_complete.py
 ```
 
 ---
@@ -198,6 +329,20 @@ uvicorn src.presentation.api.main:app --reload
 
 # Mode production
 uvicorn src.presentation.api.main:app --host 0.0.0.0 --port 8000
+```
+
+### 🐳 Alternative : Utilisation avec Docker Compose
+
+Si vous préférez utiliser Docker, assurez-vous d'avoir Docker et Docker Compose installés.
+
+#### Construire l'image et créer le container
+```bash
+docker-compose up --build
+```
+
+#### Lancer le container (si déjà construit)
+```bash
+docker-compose up
 ```
 
 🎉 **L'API est prête !**
@@ -288,30 +433,7 @@ python -m src.presentation.cli.run_pipeline
 ### "ModuleNotFoundError: No module named 'src.app'"
 L'ancienne architecture a été refactorisée. Utilisez les nouveaux chemins :
 - ❌ `src.app.main` → ✅ `src.presentation.api.main`
-- 📖 Consultez `Documents/GUIDE_MIGRATION.md` pour plus de détails
 
-## 📈 Roadmap
-
-### ✅ Complété
-- [x] API REST avec FastAPI
-- [x] Pipeline RAG complet
-- [x] Validation et gestion d'erreurs
-- [x] Documentation complète
-- [x] **Architecture en couches** (Layered Architecture)
-- [x] **Services métier réutilisables** (API + CLI)
-- [x] **Pipeline CLI orchestré** avec `run_pipeline.py`
-- [x] **Documentation architecturale** (ARCHITECTURE.md, GUIDE_MIGRATION.md)
-
-### 🔄 En cours
-- [ ] Tests unitaires complets
-- [ ] Cache embeddings
-- [ ] Monitoring
-
-### 🎯 Futur
-- [ ] Interface web (Streamlit)
-- [ ] Dockerisation
-- [ ] CI/CD
-- [ ] Modèles de domaine (Pydantic)
 
 ---
 

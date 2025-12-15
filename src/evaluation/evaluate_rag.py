@@ -7,11 +7,13 @@ from ragas.metrics import (
 )
 from ragas.llms import llm_factory
 from ragas.embeddings import LangchainEmbeddingsWrapper
+from ragas.llms import LangchainLLMWrapper
 from datasets import Dataset
 import json
 import os
 from openai import OpenAI
 from langchain_mistralai import MistralAIEmbeddings
+from langchain_mistralai import ChatMistralAI
 
 from config.config import TESTSET_PATH, MISTRAL_API_KEY
 
@@ -37,13 +39,14 @@ def ragas_evaluation():
     
     ds = Dataset.from_list(data)
 
-    # Use OpenAI-compatible client for Mistral LLM
-    client = OpenAI(
+    # Use ChatMistralAI directly
+    llm = ChatMistralAI(
+        model="mistral-large-latest",
         api_key=MISTRAL_API_KEY,
-        base_url="https://api.mistral.ai/v1"
+        temperature=0
     )
-    llm = llm_factory('mistral-large-latest', client=client)
-
+    ragas_llm = LangchainLLMWrapper(llm)
+    
     # Wrap Mistral embeddings for Ragas
     mistral_embeddings = MistralAIEmbeddings(api_key=MISTRAL_API_KEY)
     embeddings = LangchainEmbeddingsWrapper(mistral_embeddings)
@@ -51,10 +54,10 @@ def ragas_evaluation():
     results = evaluate(
         dataset=ds,
         metrics=[
-            ContextPrecision(llm=llm),
-            ContextRecall(llm=llm),
-            AnswerRelevancy(llm=llm, embeddings=embeddings),
-            Faithfulness(llm=llm)
+            ContextPrecision(llm=ragas_llm),
+            ContextRecall(llm=ragas_llm),
+            AnswerRelevancy(llm=ragas_llm, embeddings=embeddings),
+            Faithfulness(llm=ragas_llm)
         ]
     )
 

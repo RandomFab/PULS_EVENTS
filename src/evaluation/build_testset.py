@@ -28,9 +28,9 @@ def build_testset():
         question = q['question']
         ground_truth = q['ground_truth']
 
-        docs = rag.indexer.search(question, k=5)
-        retrieved_contexts = [doc[0].page_content for doc in docs]
-        answer = rag.answer_query(question)
+        # docs = rag.indexer.search(question, k=5)
+        # retrieved_contexts = [doc[0].page_content for doc in docs]
+        answer,retrieved_contexts = rag.answer_query(question)
 
         item = {
             'question': question,

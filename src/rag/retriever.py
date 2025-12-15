@@ -8,7 +8,7 @@ from config.config import APP_TITLE,MODEL_NAME,MISTRAL_API_KEY,EMBEDDING_MODEL,R
 from config.logger import logger
 
 class SimpleRetriever():
-    def __init__(self,index_dir:str,api_key:str,embedding_model:str='mistral-embed',model_name:str = "mistral-small-latest"):
+    def __init__(self,index_dir:str,api_key:str,embedding_model:str='mistral-embed',model_name:str = "mistral-small-latest", embeddings_path:str = None):
         """
         Initialise le retriever avec les composants nécessaires.
         
@@ -17,6 +17,7 @@ class SimpleRetriever():
             api_key: Clé API Mistral
             embedding_model: Modèle d'embedding à utiliser
             model_name: Modèle de chat à utiliser
+            embeddings_path: Chemin vers le fichier embeddings.json (optionnel)
         """
         try:
             logger.info("🚀 Initialisation du SimpleRetriever...")
@@ -38,6 +39,7 @@ class SimpleRetriever():
             # Initialisation de l'indexer
             logger.debug(f"📚 Initialisation de l'indexer avec {index_dir}")
             self.indexer = LangChainFaissIndexer(index_dir=index_dir, embedding_client=self.embedder.client)
+            self.indexer.embeddings_path = embeddings_path or "Data/embeddings/embeddings.json"
             
             logger.info("✅ SimpleRetriever initialisé avec succès")
             
@@ -69,10 +71,10 @@ class SimpleRetriever():
             
             # Recherche par vecteur
             logger.debug("🔎 Recherche dans l'index...")
-            documents = self.indexer.search_by_vector(query_vector=query_vector, k=5)
+            documents = self.indexer.search(query=query, k=10)
             
             # Extraction du contenu
-            retriever = [doc.page_content for doc in documents]
+            retriever = [doc.page_content for doc, score in documents]
             logger.info(f"✅ {len(retriever)} documents pertinents trouvés")
             
             return retriever
@@ -118,8 +120,8 @@ class SimpleRetriever():
             })
             
             logger.info("✅ Réponse générée avec succès")
-            return response
+            return response, retriever
             
         except Exception as e:
             logger.error(f"❌ Erreur lors de la génération de la réponse: {e}")
-            return "Désolé, une erreur s'est produite lors du traitement de votre requête. Veuillez réessayer."
+            return "Désolé, une erreur s'est produite lors du traitement de votre requête. Veuillez réessayer.",[]
