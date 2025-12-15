@@ -1,0 +1,35 @@
+# Dépendances du projet PULS_EVENTS
+# Généré à partir de pyproject.toml
+
+# Core dependencies
+python-dotenv>=0.9.9
+faiss-cpu>=1.13.0
+fastapi[standard]>=0.124.0
+uvicorn[standard]>=0.30.0
+ipykernel>=7.1.0
+
+# LangChain ecosystem
+langchain>=1.1.0
+langchain-community>=0.4.1
+langchain-mistralai>=1.1.0
+langchain-text-splitters>=1.0.0
+
+# AI/ML libraries
+mistralai>=1.9.11
+
+# Data processing
+pandas>=2.3.3
+numpy>=1.24.0
+
+# Evaluation
+ragas>=0.4.0
+
+# HTTP requests
+requests>=2.32.5
+
+# CLI utilities
+tqdm>=4.67.1
+
+# Testing
+pytest>=7.4.0
+httpx>=0.24.0

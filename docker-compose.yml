@@ -1,0 +1,6 @@
+services:
+  api:
+    build: .
+    container_name: rag_api_container
+    ports:
+      - "7860:7860"
