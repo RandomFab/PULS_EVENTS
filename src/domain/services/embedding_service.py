@@ -107,7 +107,8 @@ class EmbeddingService:
                     'start_date': row['firstTiming.begin'],
                     'end_date': row['lastTiming.end'],
                     'location_address': row['location.address'],
-                    'location_name': row['location.name']
+                    'location_name': row['location.name'],
+                    'location_city': row['location.city']
                 })
 
         return all_chunks_data

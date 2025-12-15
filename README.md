@@ -29,7 +29,6 @@ Système RAG (Retrieval-Augmented Generation) complet pour recommander des évé
 
 ---
 
-
 ## 📊 Diagrammes Architecturaux
 
 ### 🏗️ Diagramme de Composants - Architecture UML

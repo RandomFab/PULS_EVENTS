@@ -2,7 +2,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from config.logger import logger
 
 class Chunker:
-    def __init__(self,chunk_size:int = 800,chunk_overlap:int = 150):
+    def __init__(self,chunk_size:int = 400,chunk_overlap:int = 100):
         self.splitter = RecursiveCharacterTextSplitter(separators=[
                                                                     "\n\n",
                                                                     "\n",

@@ -23,6 +23,7 @@ class LangChainFaissIndexer:
         self.index_dir.mkdir(parents=True, exist_ok=True)
         self.embedding_client = embedding_client
         self.vectorstore = None
+        self.embeddings_path = None  # Chemin vers le fichier embeddings
     
     def build_from_embeddings_file(self, embeddings_path: str):
         """
@@ -101,6 +102,35 @@ class LangChainFaissIndexer:
                 allow_dangerous_deserialization=True  # Nécessaire pour charger le pickle
             )
             logger.info("✅ VectorStore chargé avec succès")
+            
+            # Recharger les documents et vecteurs depuis le fichier embeddings si disponible
+            if self.embeddings_path and Path(self.embeddings_path).exists():
+                try:
+                    with open(self.embeddings_path, 'r', encoding='utf-8') as f:
+                        embeddings_data = json.load(f)
+                    self.documents = []
+                    vectors = []
+                    for item in embeddings_data:
+                        doc = Document(
+                            page_content=item['chunk'],
+                            metadata={
+                                'event_id': item['event_id'],
+                                'title': item['title'],
+                                'keywords': item['keywords'],
+                                'start_date': item['start_date'],
+                                'end_date': item['end_date'],
+                                'location_address': item['location_address'],
+                                'location_name': item['location_name']
+                            }
+                        )
+                        self.documents.append(doc)
+                        vectors.append(item['vector'])
+                    self.vectors = np.array(vectors, dtype='float32')
+                    logger.info(f"✅ Documents et vecteurs rechargés : {len(self.documents)} éléments")
+                except Exception as e:
+                    logger.warning(f"⚠️ Impossible de recharger documents/vecteurs : {e}")
+            else:
+                logger.warning("⚠️ Fichier embeddings non trouvé, recherches filtrées limitées")
         except Exception as e:
             logger.error(f"❌ Erreur lors du chargement: {e}")
             raise
@@ -164,14 +194,7 @@ class LangChainFaissIndexer:
             k=k
         )
         
-        # # Pour obtenir les scores, on peut utiliser une recherche avec le vecteur
-        # results_with_scores = []
-        # for doc in results:
-        #     # Calcul manuel du score si nécessaire
-        #     results_with_scores.append((doc, None))
-        
-        # logger.info(f"✅ {len(results)} résultats trouvés")
-        # return results_with_scores
+        logger.info(f"✅ {len(results)} résultats trouvés")
         return results
     
     def index_info(self)->dict:
