@@ -32,7 +32,15 @@ class RagService:
         """
         try:
             logger.info(f"💬 Traitement de la requête: '{query[:50]}...'")
-            answer = self.retriever.answer_query(query)
+            result = self.retriever.answer_query(query)
+
+            # Certains retrievers retournent un tuple (response, contexts).
+            # Normaliser pour toujours renvoyer une chaîne de caractères.
+            if isinstance(result, tuple) and len(result) > 0:
+                answer = result[0]
+            else:
+                answer = result
+
             logger.info("✅ Réponse générée avec succès")
             return answer
         except Exception as e:
